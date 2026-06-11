@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://m3dstudio.com.br/sitemap.xml
