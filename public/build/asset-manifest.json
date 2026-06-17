@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "./static/css/main.c6567a88.css",
-    "main.js": "./static/js/main.b1634896.js",
+    "main.css": "./static/css/main.b6ae7305.css",
+    "main.js": "./static/js/main.c3af6796.js",
     "static/media/friburgo.mp4": "./static/media/friburgo.b1f081e61c50b055e45c.mp4",
     "static/media/geminadoshome.mp4": "./static/media/geminadoshome.13b451d26f41e97a6b36.mp4",
     "static/media/friburgorockfestival01.png": "./static/media/friburgorockfestival01.cdbc696c0c77c454345f.png",
@@ -104,11 +104,11 @@
     "static/media/slick.ttf": "./static/media/slick.c94f7671dcc99dce43e2.ttf",
     "static/media/slick.woff": "./static/media/slick.295183786cd8a1389865.woff",
     "static/media/trofeu.svg": "./static/media/trofeu.6b26c7d97c0f76d7059a50d624313d33.svg",
-    "main.c6567a88.css.map": "./static/css/main.c6567a88.css.map",
-    "main.b1634896.js.map": "./static/js/main.b1634896.js.map"
+    "main.b6ae7305.css.map": "./static/css/main.b6ae7305.css.map",
+    "main.c3af6796.js.map": "./static/js/main.c3af6796.js.map"
   },
   "entrypoints": [
-    "static/css/main.c6567a88.css",
-    "static/js/main.b1634896.js"
+    "static/css/main.b6ae7305.css",
+    "static/js/main.c3af6796.js"
   ]
 }
