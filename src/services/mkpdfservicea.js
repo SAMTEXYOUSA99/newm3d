@@ -34,7 +34,7 @@ async function generatePDF(mvpproposal) {
         const imgPortA04Path = path.join(__dirname, '../../pdfpublic/images/modela/portfolioa04.jpg');
         const imgPortA05Path = path.join(__dirname, '../../pdfpublic/images/modela/portfolioa05.jpg');
         const finalImgPath = path.join(__dirname, '../../pdfpublic/images/final.png');
-        const companyImagePath = path.join(__dirname, '../../pdfpublic/images/companypage.png');
+       // const companyImagePath = path.join(__dirname, '../../pdfpublic/images/companypage.png');
 
         // Leitura de páginas
         let cover = fs.readFileSync(coverPath, 'utf8');
@@ -121,7 +121,7 @@ async function generatePDF(mvpproposal) {
         const details03WithLogo = details03.replace('src="logocolorhorizontal"', `src="${logocolorhorizontalbs64img}"`);
         const details04WithLogo = details04.replace('src="logocolorhorizontal"', `src="${logocolorhorizontalbs64img}"`);
 
-        const companyWithImage = company.replace('src="companypage"', `src="${bs64ImgCompanyImg}"`);
+        //const companyWithImage = company.replace('src="companypage"', `src="${bs64ImgCompanyImg}"`);
 
         const porta01 = port1.replace('src="porta01"', `src="${bs64ImgPorta01}"`);
         const porta02 = port2.replace('src="porta02"', `src="${bs64ImgPorta02}"`);
