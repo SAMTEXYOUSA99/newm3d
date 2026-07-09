@@ -1,10 +1,9 @@
 {
   "files": {
-    "main.css": "./static/css/main.76468bb1.css",
-    "main.js": "./static/js/main.2b539ea4.js",
+    "main.css": "./static/css/main.227f7292.css",
+    "main.js": "./static/js/main.b0501d18.js",
     "static/media/friburgo.mp4": "./static/media/friburgo.b1f081e61c50b055e45c.mp4",
     "static/media/geminadoshome.mp4": "./static/media/geminadoshome.13b451d26f41e97a6b36.mp4",
-    "static/media/friburgorockfestival01.png": "./static/media/friburgorockfestival01.cdbc696c0c77c454345f.png",
     "static/media/backgroundblockproj.png": "./static/media/backgroundblockproj.f3e13e48571338e0ec5d.png",
     "static/media/img10-home.png": "./static/media/img10-home.73c4e1b64c6dc8fdc825.png",
     "static/media/img18-home.png": "./static/media/img18-home.cef8eeaa3a4b1b9abc6a.png",
@@ -58,6 +57,7 @@
     "static/media/img13-home.jpg": "./static/media/img13-home.9ef4af5a7ab23ef837f3.jpg",
     "static/media/img1verticalstudionormal.jpg": "./static/media/img1verticalstudionormal.145fb5609a3ee928244c.jpg",
     "static/media/img5-home.jpg": "./static/media/img5-home.4512afea28de025fe2b4.jpg",
+    "static/media/event.jpeg": "./static/media/event.e3e61702fc968c7e1a9f.jpeg",
     "static/media/img8verticalstudionormal.jpg": "./static/media/img8verticalstudionormal.55b5ed886d630894643f.jpg",
     "static/media/img12-home.jpg": "./static/media/img12-home.70451c0f26c92d26c88e.jpg",
     "static/media/img17-studio.jpg": "./static/media/img17-studio.3e89227795f858e550bd.jpg",
@@ -77,6 +77,7 @@
     "static/media/img6verticalstudionormal.jpg": "./static/media/img6verticalstudionormal.04050bd0f122fbf77fa4.jpg",
     "static/media/img2verticalstudionormal.jpg": "./static/media/img2verticalstudionormal.ab83d7495ae2c368bc59.jpg",
     "static/media/img20-studio.jpg": "./static/media/img20-studio.9c93fe9c2a177d3b1860.jpg",
+    "static/media/event2.jpg": "./static/media/event2.c88dd8d9376a1ef96ab6.jpg",
     "static/media/img2-home.jpg": "./static/media/img2-home.331827a21d9438ef9b76.jpg",
     "static/media/img16-studio.jpg": "./static/media/img16-studio.7579e18f50e2ce10fa87.jpg",
     "static/media/logom3dhomecolortextwhite.png": "./static/media/logom3dhomecolortextwhite.146bea0f3c37ad195819.png",
@@ -104,11 +105,11 @@
     "static/media/slick.ttf": "./static/media/slick.c94f7671dcc99dce43e2.ttf",
     "static/media/slick.woff": "./static/media/slick.295183786cd8a1389865.woff",
     "static/media/trofeu.svg": "./static/media/trofeu.6b26c7d97c0f76d7059a50d624313d33.svg",
-    "main.76468bb1.css.map": "./static/css/main.76468bb1.css.map",
-    "main.2b539ea4.js.map": "./static/js/main.2b539ea4.js.map"
+    "main.227f7292.css.map": "./static/css/main.227f7292.css.map",
+    "main.b0501d18.js.map": "./static/js/main.b0501d18.js.map"
   },
   "entrypoints": [
-    "static/css/main.76468bb1.css",
-    "static/js/main.2b539ea4.js"
+    "static/css/main.227f7292.css",
+    "static/js/main.b0501d18.js"
   ]
 }
