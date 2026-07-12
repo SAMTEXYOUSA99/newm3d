@@ -252,6 +252,35 @@ async function generatePDF(mvpproposal) {
         // start timer for PDF generation (content render + pdf creation)
         const startTime = process.hrtime.bigint();
 
+        // Try to embed font as Base64 into the combined HTML (replace {{FONT}})
+        try {
+            const fontCandidates = [
+                path.join(__dirname, '../../pdfpublic/modelc/Chillax-Variable.woff2'),
+                path.join(__dirname, '../../pdfpublic/modelc/Chillax-Variable.woff'),
+                path.join(__dirname, '../../pdfpublic/modelc/Chillax-Variable.ttf'),
+                path.join(__dirname, '../../pdfpublic/fonts/Chillax-Variable.woff2'),
+                path.join(__dirname, '../../pdfpublic/fonts/Chillax-Variable.woff')
+            ];
+
+            let fontBase64 = '';
+            for (const fp of fontCandidates) {
+                try {
+                    if (fs.existsSync(fp)) {
+                        fontBase64 = fs.readFileSync(fp).toString('base64');
+                        console.log('Using embedded font:', fp);
+                        break;
+                    }
+                } catch (e) {
+                    // ignore and try next
+                }
+            }
+
+            combinedHTML = combinedHTML.replace('{{FONT}}', fontBase64);
+            if (!fontBase64) console.warn('No font file found to embed (searched common locations).');
+        } catch (e) {
+            console.error('Error embedding font:', e);
+        }
+
         const setContentStart = process.hrtime.bigint();
         await page.setContent(combinedHTML, {
            /* waitUntil: 'domcontentloaded'*/
