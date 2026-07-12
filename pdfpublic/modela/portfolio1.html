@@ -7,7 +7,8 @@
     <style>
          @font-face {
             font-family: 'Chillax-Variable';
-            src: url('Chillax-Variable.ttf') format('truetype');
+            src: url('Chillax-Variable.woff2') format('woff2'),
+         url('Chillax-Variable.woff') format('woff');
             font-weight: 200 700;
             font-display: swap;
             font-style: normal;
@@ -21,8 +22,11 @@
 
         .containerpor {
         
-            width: 100%;
-            height: 792.8px;
+           width: 313mm;   /* troquei para essas novas medidas */
+  height: 221mm;
+  position: relative;
+  overflow: hidden; /* add isso pra cima tb */
+    background-color: black;
         }
 
         .containerpor h1{
@@ -48,18 +52,18 @@
         }
 
         .portimgfirst{
-            width: 100%;
-            height: 870px;
-        
-            z-index: -50;
+               display:block;
+    width:100%;
+    height:100%;
+    object-fit:contain;
         }
     </style>
 </head>
 <body>
-    <div class="gradientlinepor"></div>
+    <!--<div class="gradientlinepor"></div>-->
     <div class="containerpor">
         <img src="porta01" alt="" class="portimgfirst"/>
-        <h1>PORTFOLIO<br/>RESIDENCIAL</h1>
+        <!--<h1>PORTFOLIO<br/>RESIDENCIAL</h1>-->
     </div>
 </body>
 </html>

@@ -1,5 +1,4 @@
 const MVPProposal = require('../models/MVPProposal');
-const PDFServiceA = require('../services/PDFServiceA');
 const other = require('../services/mkpdfservicec');
 const othera = require('../services/mkpdfservicea');
 

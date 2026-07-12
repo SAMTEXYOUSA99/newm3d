@@ -254,8 +254,20 @@ async function generatePDF(mvpproposal) {
 
         const setContentStart = process.hrtime.bigint();
         await page.setContent(combinedHTML, {
-            waitUntil: 'domcontentloaded'
+           /* waitUntil: 'domcontentloaded'*/
+            waitUntil: 'networkidle0'
         });
+        await page.evaluate(async () => {
+            await document.fonts.ready;
+        });
+        const fonts = await page.evaluate(() =>
+            [...document.fonts].map(f => ({
+                family: f.family,
+                status: f.status
+            }))
+        );
+
+        console.log('fontes:', fonts);
         const setContentEnd = process.hrtime.bigint();
         console.log('TIMER - page.setContent:', formatDurationMs(Number(setContentEnd - setContentStart) / 1e6));
 

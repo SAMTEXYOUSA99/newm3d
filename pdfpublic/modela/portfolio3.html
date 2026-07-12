@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>M Projeto 3D</title>
     <style>
-         @font-face {
+          @font-face {
             font-family: 'Chillax-Variable';
-            src: url('Chillax-Variable.ttf') format('truetype');
+            src: url('Chillax-Variable.woff2') format('woff2'),
+         url('Chillax-Variable.woff') format('woff');
             font-weight: 200 700;
             font-display: swap;
             font-style: normal;
@@ -20,8 +21,11 @@
         }
 
         .containerpor3 {
-            width: 100%;
-            height: 792.8px;
+           width: 313mm;   /* troquei para essas novas medidas */
+  height: 221mm;
+  position: relative;
+  overflow: hidden; /* add isso pra cima tb */
+    background-color: black;
         }
 
         .containerpor3 h1{
@@ -41,18 +45,18 @@
    
 
         .portimgthird{
-            width: 100%;
-            height: 870px;
-        
-            z-index: -50;
+                  display:block;
+    width:100%;
+    height:100%;
+    object-fit:contain;
         }
     </style>
 </head>
 <body>
-    <div class="gradientlinepor"></div>
+    <!--<div class="gradientlinepor"></div>-->
     <div class="containerpor3">
         <img src="porta03" alt="" class="portimgthird"/>
-        <h1>PORTFOLIO<br/>RESIDENCIAL</h1>
+        <!--<h1>PORTFOLIO<br/>RESIDENCIAL</h1>-->
     </div>
 </body>
 </html>
