@@ -40,6 +40,7 @@ async function generatePDF(mvpproposal) {
         const launchOptions = {
             headless: true,
             timeout: 300000,
+            protocolTimeout: 600000,
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
@@ -282,13 +283,21 @@ async function generatePDF(mvpproposal) {
         }
 
         const setContentStart = process.hrtime.bigint();
+        // strip any <script> blocks to avoid long-running network/activity
+        combinedHTML = combinedHTML.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '');
         await page.setContent(combinedHTML, {
-           /* waitUntil: 'domcontentloaded'*/
-            waitUntil: 'networkidle0'
+            waitUntil: 'domcontentloaded',
+            timeout: 120000
         });
-        await page.evaluate(async () => {
-            await document.fonts.ready;
-        });
+        // wait for fonts but don't hang forever
+        try {
+            await Promise.race([
+                page.evaluate(() => document.fonts.ready),
+                new Promise((_, reject) => setTimeout(() => reject(new Error('fonts.ready timeout')), 30000))
+            ]);
+        } catch (e) {
+            console.warn('fonts.ready did not complete in time:', e.message);
+        }
         const fonts = await page.evaluate(() =>
             [...document.fonts].map(f => ({
                 family: f.family,
