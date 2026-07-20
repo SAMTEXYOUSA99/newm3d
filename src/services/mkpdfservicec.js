@@ -253,34 +253,8 @@ async function generatePDF(mvpproposal) {
         // start timer for PDF generation (content render + pdf creation)
         const startTime = process.hrtime.bigint();
 
-        // Try to embed font as Base64 into the combined HTML (replace {{FONT}})
-        try {
-            const fontCandidates = [
-                path.join(__dirname, '../../pdfpublic/modelc/Chillax-Variable.woff2'),
-                path.join(__dirname, '../../pdfpublic/modelc/Chillax-Variable.woff'),
-                path.join(__dirname, '../../pdfpublic/modelc/Chillax-Variable.ttf'),
-                path.join(__dirname, '../../pdfpublic/fonts/Chillax-Variable.woff2'),
-                path.join(__dirname, '../../pdfpublic/fonts/Chillax-Variable.woff')
-            ];
-
-            let fontBase64 = '';
-            for (const fp of fontCandidates) {
-                try {
-                    if (fs.existsSync(fp)) {
-                        fontBase64 = fs.readFileSync(fp).toString('base64');
-                        console.log('Using embedded font:', fp);
-                        break;
-                    }
-                } catch (e) {
-                    // ignore and try next
-                }
-            }
-
-            combinedHTML = combinedHTML.replace('{{FONT}}', fontBase64);
-            if (!fontBase64) console.warn('No font file found to embed (searched common locations).');
-        } catch (e) {
-            console.error('Error embedding font:', e);
-        }
+        // remove font placeholder to use default system fonts in production
+        combinedHTML = combinedHTML.replace('{{FONT}}', '');
 
         const setContentStart = process.hrtime.bigint();
         // strip any <script> blocks to avoid long-running network/activity
@@ -289,23 +263,7 @@ async function generatePDF(mvpproposal) {
             waitUntil: 'domcontentloaded',
             timeout: 120000
         });
-        // wait for fonts but don't hang forever
-        try {
-            await Promise.race([
-                page.evaluate(() => document.fonts.ready),
-                new Promise((_, reject) => setTimeout(() => reject(new Error('fonts.ready timeout')), 30000))
-            ]);
-        } catch (e) {
-            console.warn('fonts.ready did not complete in time:', e.message);
-        }
-        const fonts = await page.evaluate(() =>
-            [...document.fonts].map(f => ({
-                family: f.family,
-                status: f.status
-            }))
-        );
-
-        console.log('fontes:', fonts);
+        // do not wait for document.fonts; use browser defaults
         const setContentEnd = process.hrtime.bigint();
         console.log('TIMER - page.setContent:', formatDurationMs(Number(setContentEnd - setContentStart) / 1e6));
 
