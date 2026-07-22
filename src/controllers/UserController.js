@@ -10,7 +10,7 @@ module.exports = {
             return res.status(404).json({ success: false, message: 'Usuário não existe' });
         } else {
             
-            return res.json({ success: true, message: 'Redirecionando para o dashboard' });
+            return res.json({ success: true, message: 'Redirecionando para o dashboard' , userId: user._id });
         }
 
         //const user = await UserM3D.create({email});

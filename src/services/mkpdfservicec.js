@@ -2,6 +2,7 @@ const path = require('path');
 const fs = require('fs');
 const puppeteer = require('puppeteer');
 const base64Img = require('base64-img');
+const { pathToFileURL } = require('url');
 
 async function generatePDF(mvpproposal) {
     let browser;
@@ -114,57 +115,22 @@ async function generatePDF(mvpproposal) {
 
         const priceparc = mvpproposal.projectPrice / 2;
 
-        // imagens base64 (measuring each conversion)
-        const encodeStart = process.hrtime.bigint();
-        const encStart_logo = process.hrtime.bigint();
-        const logocolor = base64Img.base64Sync(logoPath);
-        const encEnd_logo = process.hrtime.bigint();
-        console.log('TIMER - encode logo:', formatDurationMs(Number(encEnd_logo - encStart_logo) / 1e6));
-
-        const encStart_logoh = process.hrtime.bigint();
-        const logohorizontal = base64Img.base64Sync(logoHorizontalPath);
-        const encEnd_logoh = process.hrtime.bigint();
-        console.log('TIMER - encode logoHorizontal:', formatDurationMs(Number(encEnd_logoh - encStart_logoh) / 1e6));
-
-        const encStart_p1 = process.hrtime.bigint();
-        const p1Img = base64Img.base64Sync(imgPortC01Path);
-        const encEnd_p1 = process.hrtime.bigint();
-        console.log('TIMER - encode portc01:', formatDurationMs(Number(encEnd_p1 - encStart_p1) / 1e6));
-
-        const encStart_p2 = process.hrtime.bigint();
-        const p2Img = base64Img.base64Sync(imgPortC02Path);
-        const encEnd_p2 = process.hrtime.bigint();
-        console.log('TIMER - encode portc02:', formatDurationMs(Number(encEnd_p2 - encStart_p2) / 1e6));
-
-        const encStart_p3 = process.hrtime.bigint();
-        const p3Img = base64Img.base64Sync(imgPortC03Path);
-        const encEnd_p3 = process.hrtime.bigint();
-        console.log('TIMER - encode portc03:', formatDurationMs(Number(encEnd_p3 - encStart_p3) / 1e6));
-
-        const encStart_p4 = process.hrtime.bigint();
-        const p4Img = base64Img.base64Sync(imgPortC04Path);
-        const encEnd_p4 = process.hrtime.bigint();
-        console.log('TIMER - encode portc04:', formatDurationMs(Number(encEnd_p4 - encStart_p4) / 1e6));
-
-        const encStart_p5 = process.hrtime.bigint();
-        const p5Img = base64Img.base64Sync(imgPortC05Path);
-        const encEnd_p5 = process.hrtime.bigint();
-        console.log('TIMER - encode portc05:', formatDurationMs(Number(encEnd_p5 - encStart_p5) / 1e6));
-
-        const encStart_final = process.hrtime.bigint();
-        const finalImgB64 = base64Img.base64Sync(finalImgPath);
-        const encEnd_final = process.hrtime.bigint();
-        console.log('TIMER - encode finalImg:', formatDurationMs(Number(encEnd_final - encStart_final) / 1e6));
-
-        const encodeEnd = process.hrtime.bigint();
-        console.log('TIMER - total image encoding:', formatDurationMs(Number(encodeEnd - encodeStart) / 1e6));
+        // Use file URLs instead of Base64-embedding images to speed up rendering
+        const logocolor = pathToFileURL(logoPath).href;
+        const logohorizontal = pathToFileURL(logoHorizontalPath).href;
+        const p1Img = pathToFileURL(imgPortC01Path).href;
+        const p2Img = pathToFileURL(imgPortC02Path).href;
+        const p3Img = pathToFileURL(imgPortC03Path).href;
+        const p4Img = pathToFileURL(imgPortC04Path).href;
+        const p5Img = pathToFileURL(imgPortC05Path).href;
+        const finalImg = pathToFileURL(finalImgPath).href;
 
         const portc01 = port1.replace('src="portc01"', `src="${p1Img}"`);
         const portc02 = port2.replace('src="portc02"', `src="${p2Img}"`);
         const portc03 = port3.replace('src="portc03"', `src="${p3Img}"`);
         const portc04 = port4.replace('src="portc04"', `src="${p4Img}"`);
         const portc05 = port5.replace('src="portc05"', `src="${p5Img}"`);
-        const finalImg = final.replace('src="final"', `src="${finalImgB64}"`);
+        const finalImgHtml = final.replace('src="final"', `src="${finalImg}"`);
 
         const coverWithImages = cover
             .replace('src="logocolorcover"', `src="${logocolor}"`)
@@ -231,7 +197,7 @@ async function generatePDF(mvpproposal) {
                 //company +
                 portc01 + portc02 + portc03 + portc04 + portc05 +
                 details02Final + details03Final + details04Final +
-                finalImg;
+                finalImgHtml;
 
         } else if (hasFirst && !hasSecond) {
             combinedHTML =
@@ -239,7 +205,7 @@ async function generatePDF(mvpproposal) {
                 //company +
                 portc01 + portc02 + portc03 + portc04 + portc05 +
                 details01Final + details03Final + details04Final +
-                finalImg;
+                finalImgHtml;
 
         } else {
             combinedHTML =
@@ -247,7 +213,7 @@ async function generatePDF(mvpproposal) {
                 //company +
                 portc01 + portc02 + portc03 + portc04 + portc05 +
                 details01Final + details02Final + details03Final + details04Final +
-                finalImg;
+                finalImgHtml;
         }
 
         // start timer for PDF generation (content render + pdf creation)
@@ -259,10 +225,13 @@ async function generatePDF(mvpproposal) {
         const setContentStart = process.hrtime.bigint();
         // strip any <script> blocks to avoid long-running network/activity
         combinedHTML = combinedHTML.replace(/<script[\s\S]*?>[\s\S]*?<\/script>/gi, '');
-        await page.setContent(combinedHTML, {
-            waitUntil: 'domcontentloaded',
-            timeout: 120000
-        });
+        // Write combined HTML to a temporary file and navigate to it using file:// so local images load
+        const tmpDir = path.join(__dirname, '../../pdfpublic/tmp');
+        try { fs.mkdirSync(tmpDir, { recursive: true }); } catch (e) {}
+        const tmpFile = path.join(tmpDir, `proposal_${Date.now()}.html`);
+        fs.writeFileSync(tmpFile, combinedHTML, 'utf8');
+        const fileUrl = pathToFileURL(tmpFile).href;
+        await page.goto(fileUrl, { waitUntil: 'domcontentloaded', timeout: 120000 });
         // do not wait for document.fonts; use browser defaults
         const setContentEnd = process.hrtime.bigint();
         console.log('TIMER - page.setContent:', formatDurationMs(Number(setContentEnd - setContentStart) / 1e6));
@@ -283,6 +252,8 @@ async function generatePDF(mvpproposal) {
         const pdfEnd = process.hrtime.bigint();
         console.log('TIMER - page.pdf:', formatDurationMs(Number(pdfEnd - pdfStart) / 1e6));
 
+        // remove temp file
+        try { fs.unlinkSync(tmpFile); } catch (e) {}
         await browser.close();
 
         const endTime = process.hrtime.bigint();

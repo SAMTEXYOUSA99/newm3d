@@ -44,6 +44,19 @@ module.exports = {
       const projectDeadline = productionDays ? `${productionDays} dias` : '';
 
       // Map to fields expected by existing PDF services
+      // Support new frontend payload keys like `project_model_description` and `project_model_title`.
+      let projectModelFirst = '';
+      let projectModelSecond = '';
+
+      if (req.body.project_model_description) {
+        projectModelFirst = req.body.project_model_description;
+      } else if (req.body.project_model_title) {
+        projectModelFirst = req.body.project_model_title;
+      } else if (project_model) {
+        // fallback: use the raw project_model value (could be type or short id)
+        projectModelFirst = project_model;
+      }
+
       const mvppayload = {
         projectName,
         clientName,
@@ -55,8 +68,8 @@ module.exports = {
         currentDate,
         projectDeadline,
         projectModelType: project_model,
-        projectModelFirst: '',
-        projectModelSecond: ''
+        projectModelFirst,
+        projectModelSecond
       };
 
       // Create DB record first

@@ -16,6 +16,11 @@ module.exports = {
             currentDate,
             projectDeadline,
             projectModelType,
+            project_model, // new frontend field (e.g. "A interno")
+            project_model_description, // preferred template text
+            project_model_description_second,
+            project_model_title,
+            project_model_title_second
         } = req.body;
 
         let services = [];
@@ -30,17 +35,21 @@ module.exports = {
        
         let formattedProjectModelFirst = '';
         let formattedProjectModelSecond = '';
-        
-        if (!projectModelFirst) {
+
+        // Prefer new payload descriptions if present
+        const rawFirst = project_model_description || projectModelFirst || project_model_title || '';
+        const rawSecond = project_model_description_second || projectModelSecond || project_model_title_second || '';
+
+        if (!rawFirst) {
             console.log('projectModelFirst está vazio ou nulo');
         } else {
-            formattedProjectModelFirst = projectModelFirst.replace(/;\s*/g, ';<br>');
+            formattedProjectModelFirst = String(rawFirst).replace(/;\s*/g, ';<br>');
         }
-        
-        if (!projectModelSecond) {
+
+        if (!rawSecond) {
             console.log('projectModelSecond está vazio ou nulo');
         } else {
-            formattedProjectModelSecond = projectModelSecond.replace(/;\s*/g, ';<br>');
+            formattedProjectModelSecond = String(rawSecond).replace(/;\s*/g, ';<br>');
         }
         
         console.log('formattedProjectModelFirst:', formattedProjectModelFirst);
@@ -64,19 +73,25 @@ module.exports = {
 
             const pdfFileName = `${clientName} - ORÇAMENTO PROPOSTA DE INVESTIMENTO M3D STUDIO - ${projectName}.pdf`;
             
-            if (projectModelType === 'A') {
-                // Gerar o PDF usando o serviço dedicado
-                const pdfBufferA = await othera.generatePDF(mvpproposal);
+            // Determine model letter from old `projectModelType` or new `project_model` (e.g. "A interno")
+            const modelSelector = (projectModelType || project_model || '').toString().trim();
+            const modelLetter = modelSelector ? modelSelector.toUpperCase()[0] : '';
 
-                 // Definir headers para a resposta do PDF
+            if (modelLetter === 'A') {
+                const pdfBufferA = await othera.generatePDF(mvpproposal);
                 res.setHeader('Content-Type', 'application/pdf');
                 res.setHeader('Content-Disposition', `attachment; filename="${pdfFileName}"`);
                 res.send(pdfBufferA);
-            } else if (projectModelType === 'C') {
-                // Gerar o PDF usando o serviço dedicado
+            } else if (modelLetter === 'C') {
                 const pdfBufferC = await other.generatePDF(mvpproposal);
                 console.log('nome arquivo:', pdfFileName);
-                 // Definir headers para a resposta do PDF
+                res.setHeader('Content-Type', 'application/pdf');
+                res.setHeader('Content-Disposition', `attachment; filename="${pdfFileName}"`);
+                res.send(pdfBufferC);
+            } else {
+                // Fallback: default to C templates if cannot determine
+                console.warn('Could not determine model letter, falling back to C templates. modelSelector=', modelSelector);
+                const pdfBufferC = await other.generatePDF(mvpproposal);
                 res.setHeader('Content-Type', 'application/pdf');
                 res.setHeader('Content-Disposition', `attachment; filename="${pdfFileName}"`);
                 res.send(pdfBufferC);

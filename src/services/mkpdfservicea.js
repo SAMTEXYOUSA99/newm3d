@@ -1,7 +1,7 @@
 const path = require('path');
 const fs = require('fs');
 const puppeteer = require('puppeteer');
-const base64Img = require('base64-img'); 
+const { pathToFileURL } = require('url');
 
 async function generatePDF(mvpproposal) {
     let browser;
@@ -91,17 +91,18 @@ async function generatePDF(mvpproposal) {
         const priceparc = mvpproposal.projectPrice / 2;
         console.log('data:', mvpproposal.currentDate);
 
-        const logocolorbs64img = base64Img.base64Sync(logoPath);
-        const logocolorhorizontalbs64img = base64Img.base64Sync(logoHorizontalPath);
-        const bs64ImgPorta01 = base64Img.base64Sync(imgPortA01Path);
-        const bs64ImgPorta02 = base64Img.base64Sync(imgPortA02Path);
-        const bs64ImgPorta03 = base64Img.base64Sync(imgPortA03Path);
-        const bs64ImgPorta04 = base64Img.base64Sync(imgPortA04Path);
-        const bs64ImgPorta05 = base64Img.base64Sync(imgPortA05Path);
-        const bs64FinalImg = base64Img.base64Sync(finalImgPath);
+        // Use file URLs for images to avoid embedding large Base64 blobs
+        const logocolorUrl = pathToFileURL(logoPath).href;
+        const logocolorhorizontalUrl = pathToFileURL(logoHorizontalPath).href;
+        const imgPorta01Url = pathToFileURL(imgPortA01Path).href;
+        const imgPorta02Url = pathToFileURL(imgPortA02Path).href;
+        const imgPorta03Url = pathToFileURL(imgPortA03Path).href;
+        const imgPorta04Url = pathToFileURL(imgPortA04Path).href;
+        const imgPorta05Url = pathToFileURL(imgPortA05Path).href;
+        const finalImgUrl = pathToFileURL(finalImgPath).href;
 
         const coverWithImages = cover
-            .replace('src="logocolorcover"', `src="${logocolorbs64img}"`)
+            .replace('src="logocolorcover"', `src="${logocolorUrl}"`)
             .replace('{{currentDate}}', mvpproposal.currentDate);
 
         let servicesList = '';
@@ -116,7 +117,7 @@ async function generatePDF(mvpproposal) {
             .replace('{{clientPhone}}', mvpproposal.clientPhone)
             .replace('{{projectDeadline}}', mvpproposal.projectDeadline)
             .replace('{{projectModelFirst}}', mvpproposal.projectModelFirst)
-            .replace('src="logocolorhorizontal"', `src="${logocolorhorizontalbs64img}"`);
+            .replace('src="logocolorhorizontal"', `src="${logocolorhorizontalUrl}"`);
 
         details02 = details02.replace('{{projectName}}', mvpproposal.projectName)
             .replace('{{clientName}}', mvpproposal.clientName)
@@ -124,7 +125,7 @@ async function generatePDF(mvpproposal) {
             .replace('{{clientPhone}}', mvpproposal.clientPhone)
             .replace('{{projectDeadline}}', mvpproposal.projectDeadline)
             .replace('{{projectModelSecond}}', mvpproposal.projectModelSecond)
-            .replace('src="logocolorhorizontal"', `src="${logocolorhorizontalbs64img}"`);
+            .replace('src="logocolorhorizontal"', `src="${logocolorhorizontalUrl}"`);
 
         details03 = details03.replace('{{projectName}}', mvpproposal.projectName)
             .replace('{{clientName}}', mvpproposal.clientName)
@@ -132,7 +133,7 @@ async function generatePDF(mvpproposal) {
             .replace('{{clientPhone}}', mvpproposal.clientPhone)
             .replace('{{projectDeadline}}', mvpproposal.projectDeadline)
             .replace('{{projectServices}}', servicesList)
-            .replace('src="logocolorhorizontal"', `src="${logocolorhorizontalbs64img}"`);
+            .replace('src="logocolorhorizontal"', `src="${logocolorhorizontalUrl}"`);
 
         details04 = details04.replace('{{projectName}}', mvpproposal.projectName)
             .replace('{{clientName}}', mvpproposal.clientName)
@@ -140,14 +141,14 @@ async function generatePDF(mvpproposal) {
             .replace('{{clientPhone}}', mvpproposal.clientPhone)
             .replace('{{projectDeadline}}', mvpproposal.projectDeadline)
             .replace('{{priceparc}}', priceparc)
-            .replace('src="logocolorhorizontal"', `src="${logocolorhorizontalbs64img}"`);
+            .replace('src="logocolorhorizontal"', `src="${logocolorhorizontalUrl}"`);
 
-        const porta01 = port1.replace('src="porta01"', `src="${bs64ImgPorta01}"`);
-        const porta02 = port2.replace('src="porta02"', `src="${bs64ImgPorta02}"`);
-        const porta03 = port3.replace('src="porta03"', `src="${bs64ImgPorta03}"`);
-        const porta04 = port4.replace('src="porta04"', `src="${bs64ImgPorta04}"`);
-        const porta05 = port5.replace('src="porta05"', `src="${bs64ImgPorta05}"`);
-        const finalImg = final.replace('src="final"', `src="${bs64FinalImg}"`);
+        const porta01 = port1.replace('src="porta01"', `src="${imgPorta01Url}"`);
+        const porta02 = port2.replace('src="porta02"', `src="${imgPorta02Url}"`);
+        const porta03 = port3.replace('src="porta03"', `src="${imgPorta03Url}"`);
+        const porta04 = port4.replace('src="porta04"', `src="${imgPorta04Url}"`);
+        const porta05 = port5.replace('src="porta05"', `src="${imgPorta05Url}"`);
+        const finalImg = final.replace('src="final"', `src="${finalImgUrl}"`);
 
         const hasFirst = mvpproposal.projectModelFirst !== '';
         const hasSecond = mvpproposal.projectModelSecond !== '';
@@ -168,50 +169,17 @@ async function generatePDF(mvpproposal) {
             console.log('Todos preenchidos');
         }
 
-        // Try to embed font as Base64 into the combined HTML (replace {{FONT}})
-        try {
-            const fontCandidates = [
-                path.join(__dirname, '../../pdfpublic/modela/Chillax-Variable.woff2'),
-                path.join(__dirname, '../../pdfpublic/modela/Chillax-Variable.woff'),
-                path.join(__dirname, '../../pdfpublic/modelc/Chillax-Variable.woff2'),
-                path.join(__dirname, '../../pdfpublic/fonts/Chillax-Variable.woff2')
-            ];
+        // Do not embed fonts as Base64 to avoid long waits; use browser/system fonts.
+        combinedHTML = combinedHTML.replace('{{FONT}}', '');
 
-            let fontBase64 = '';
-            for (const fp of fontCandidates) {
-                try {
-                    if (fs.existsSync(fp)) {
-                        fontBase64 = fs.readFileSync(fp).toString('base64');
-                        console.log('Using embedded font:', fp);
-                        break;
-                    }
-                } catch (e) {
-                    // ignore and try next
-                }
-            }
+        // Write combined HTML to a temporary file and navigate to it using file://
+        const tmpDir = path.join(__dirname, '../../pdfpublic/tmp');
+        try { fs.mkdirSync(tmpDir, { recursive: true }); } catch (e) {}
+        const tmpFile = path.join(tmpDir, `proposal_${Date.now()}.html`);
+        fs.writeFileSync(tmpFile, combinedHTML, 'utf8');
 
-            combinedHTML = combinedHTML.replace('{{FONT}}', fontBase64);
-            if (!fontBase64) console.warn('No font file found to embed (searched common locations).');
-        } catch (e) {
-            console.error('Error embedding font:', e);
-        }
-
-        await page.setContent(combinedHTML, {
-    waitUntil: 'networkidle0'
-});
-
-await page.evaluate(async () => {
-    await document.fonts.ready;
-});
-
-const fonts = await page.evaluate(() =>
-    [...document.fonts].map(f => ({
-        family: f.family,
-        status: f.status
-    }))
-);
-
-console.log('fontes: ', fonts);
+        const fileUrl = pathToFileURL(tmpFile).href;
+        await page.goto(fileUrl, { waitUntil: 'domcontentloaded', timeout: 120000 });
 
         const buffer = await page.pdf({
             format: 'A4',
@@ -226,6 +194,8 @@ console.log('fontes: ', fonts);
             }
         });
 
+        // remove temp file
+        try { fs.unlinkSync(tmpFile); } catch (e) {}
         await browser.close();
         console.log('PDF generated successfully');
         return buffer;
