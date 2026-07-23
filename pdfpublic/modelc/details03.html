@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Exemplo de PDF</title>
+    <style>
+      body {
+            background-color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            color: #fff;
+        }
+        .faixa{
+            width: 100%;
+            height: 90px;
+            background-color: #545454;
+            padding-top: 3%;
+            padding-left: 3%;
+        }
+        .clientsdata {
+            font-weight: 600;
+        }
+        .containerdetailsfirst{
+            width: 100%;
+            height: 660px;
+            
+            padding-top: 5%;
+            padding-left: 5%;
+        }
+        p {
+            font-size: 18px;
+            margin-top: -4px;
+        }
+        .lasttxt{
+            font-size: 14px;
+            margin-top: -5px;
+        }
+        ul {
+            list-style: none;
+        }
+        li {
+            font-size: 26px;
+            color: #545454;
+
+        }
+       
+    </style>
+     
+</head>
+<body>
+    <div class="faixa"><h1 class="fdettit">DETALHES DO ORÇAMENTO</h1></div>
+    <div class="containerdetailsfirst">
+        <h2 class="clientsdata">Projeto: {{projectName}}<br/>
+            Cliente: {{clientName}}<br/>
+            Celular: {{clientPhone}}<br/>
+            Prazo: {{projectDeadline}} dias úteis</h2>
+            
+            <div class="sectionservices">
+                <p>
+                    <ul>
+                        {{projectServices}}
+                    </ul>
+                </p>
+            </div>
+
+             <img src="logocolorhorizontal" alt="" class="detailslogo" /> 
+    </div>
+    
+</body>
+</html>

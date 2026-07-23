@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Exemplo de PDF</title>
+    <style>
+        @page { size: A4 landscape; margin: 0; } /*add: apenas isso n mudou nada*/
+        html { /*add all here, n mudou nada*/
+            margin: 0;
+            padding: 0;
+            height: 100%;
+        }
+       @font-face {
+            font-family: 'Chillax-Variable';
+            src: url('Chillax-Variable.woff2') format('woff2'),
+         url('Chillax-Variable.woff') format('woff');
+            font-weight: 200 700;
+            font-display: swap;
+            font-style: normal;
+        }
+          body{ 
+            font-family: 'Chillax-Variable', sans-serif;
+    width:100%;
+    height:100%;
+    margin:0;
+    padding:0;
+    overflow:hidden;
+}
+        .containerpor {
+        
+              width: 313mm;   /* troquei para essas novas medidas */
+  height: 221mm;
+  position: relative;
+  overflow: hidden; /* add isso pra cima tb */
+    background-color: black;
+        }
+        
+       /* .ultimadiv {
+           
+            width: 100%;
+            height: 780px;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            
+            
+        }*/
+        
+       .portimgfirst{
+           display:block;
+    width:100%;
+    height:100%;
+    object-fit:contain;
+        }
+    </style>
+     
+</head>
+<body>
+    
+    <div class="containerpor">
+        <img src="final" alt=""class="portimgfirst" />
+    </div>
+
+   
+     
+</body>
+</html>
