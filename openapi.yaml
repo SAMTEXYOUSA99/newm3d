@@ -1,0 +1,79 @@
+openapi: 3.0.0
+info:
+  title: Proposals API
+  version: 1.0.0
+paths:
+  /proposals:
+    get:
+      summary: Lista propostas
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+        - in: query
+          name: perPage
+          schema:
+            type: integer
+        - in: query
+          name: status
+          schema:
+            type: string
+        - in: query
+          name: q
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Lista paginada
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id: { type: string }
+                        title: { type: string }
+                        client: { type: string }
+                        value: { type: number }
+                        status: { type: string }
+                        updated: { type: string }
+                        team:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              name: { type: string }
+                  total: { type: integer }
+  /proposals/{id}:
+    get:
+      summary: Detalhe de uma proposta
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Proposta
+          content:
+            application/json:
+              schema:
+                type: object
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Not found
+servers:
+  - url: http://localhost:4444

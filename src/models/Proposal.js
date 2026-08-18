@@ -14,6 +14,10 @@ const ProposalSchema = new mongoose.Schema({
       price: Number,
     }
   ],
+  code: {
+    type: String,
+    index: { unique: true, sparse: true }
+  },
   productionDays: Number,
   currentDate: String,
   projectDeadline: String,

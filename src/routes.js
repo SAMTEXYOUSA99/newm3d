@@ -22,6 +22,8 @@ routes.post('/mvpproposals/cextern', MVPProposalController.store);
 routes.post('/mvpproposals/cinextern', MVPProposalController.store);
 
 routes.post('/proposals', ProposalController.store);
+routes.get('/proposals', ProposalController.index);
+routes.get('/proposals/:id', ProposalController.show);
 
 // Files (upload flow)
 routes.post('/api/files/presign', FilesController.presign);

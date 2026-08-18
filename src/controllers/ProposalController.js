@@ -87,6 +87,12 @@ module.exports = {
         user: user_id || undefined
       });
 
+      // Ensure a searchable `code` is persisted (e.g. ORC-ABC123)
+      if (!proposal.code) {
+        proposal.code = `ORC-${String(proposal._id).slice(-6).toUpperCase()}`;
+        try { await proposal.save(); } catch (e) { /* ignore save errors (e.g. rare unique conflicts) */ }
+      }
+
       // Generate PDF using appropriate service
       let pdfBuffer;
       if (String(project_model).toUpperCase() === 'A') {
@@ -122,6 +128,108 @@ module.exports = {
     } catch (error) {
       console.error('Error in ProposalController.store:', error);
       return res.status(500).json({ error: 'Error creating proposal', details: error.message });
+    }
+  }
+  ,
+  async index(req, res) {
+    try {
+      const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+      const perPage = Math.max(1, Math.min(100, parseInt(req.query.perPage, 10) || 12));
+      const q = req.query.q;
+      const status = req.query.status;
+
+      const filter = {};
+      if (status) filter.status = status;
+      if (q) {
+        const regex = new RegExp(q, 'i');
+        filter.$or = [
+          { projectName: regex },
+          { clientName: regex },
+          { 'project_services.label': regex }
+        ];
+      }
+
+      const total = await Proposal.countDocuments(filter);
+      const docs = await Proposal.find(filter)
+        .populate('user', 'name')
+        .sort({ createdAt: -1 })
+        .skip((page - 1) * perPage)
+        .limit(perPage)
+        .exec();
+
+      const items = docs.map(d => {
+        const id = d.code || `ORC-${String(d._id).slice(-6).toUpperCase()}`;
+        return {
+          id,
+          title: d.projectName || '',
+          client: d.clientName || '',
+          value: typeof d.project_price === 'number' ? d.project_price : Number(d.project_price || 0),
+          status: d.status || 'Em elaboração',
+          updated: d.currentDate || d.createdAt,
+          team: d.user ? [{ name: d.user.name }] : []
+        };
+      });
+
+      return res.json({ items, total });
+    } catch (err) {
+      console.error('ProposalController.index error:', err);
+      return res.status(500).json([{ message: 'Server error', code: 'server_error' }]);
+    }
+  },
+
+  async show(req, res) {
+    try {
+      const id = req.params.id;
+      let proposal = null;
+
+      if (/^ORC-/i.test(id)) {
+        proposal = await Proposal.findOne({ code: id }).populate('user', 'name').exec();
+      }
+
+      if (!proposal) {
+        try {
+          proposal = await Proposal.findById(id).populate('user', 'name').exec();
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      if (!proposal) {
+        return res.status(404).json({ message: 'Not found' });
+      }
+
+      const idOut = proposal.code || `ORC-${String(proposal._id).slice(-6).toUpperCase()}`;
+      const subtotal = Array.isArray(proposal.project_services)
+        ? proposal.project_services.reduce((s, it) => s + (Number(it.price) || 0), 0)
+        : 0;
+      const discount = Number(proposal.discount || 0);
+      const taxes = Math.round(subtotal * 0.05);
+      const total = subtotal - discount + taxes;
+      const marginPct = Number(proposal.marginPct || 35);
+      const estimatedProfit = Math.round(total * (marginPct / 100));
+
+      const response = {
+        id: idOut,
+        title: proposal.projectName || '',
+        client: proposal.clientName || '',
+        createdAt: proposal.createdAt,
+        status: proposal.status || 'Em elaboração',
+        responsible: proposal.user ? { name: proposal.user.name, avatar: proposal.user.avatar || null } : null,
+        subtotal,
+        discount,
+        taxes,
+        total,
+        marginPct,
+        estimatedProfit,
+        products: (proposal.project_services || []).map((p, idx) => ({ id: idx + 1, title: p.label || p.name || '', desc: '', qty: 1, unit: Number(p.price || 0), total: Number(p.price || 0) })),
+        activities: proposal.activities || [],
+        files: proposal.pdfFileName ? [{ id: 'pdf1', name: proposal.pdfFileName, size: null, type: 'pdf', uploadedAt: proposal.createdAt }] : (proposal.files || [])
+      };
+
+      return res.json(response);
+    } catch (err) {
+      console.error('ProposalController.show error:', err);
+      return res.status(500).json([{ message: 'Server error', code: 'server_error' }]);
     }
   }
 };

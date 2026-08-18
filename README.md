@@ -30,3 +30,28 @@ Notes
 - The project uses `aws-sdk` configured to talk to MinIO when `S3_ENDPOINT` is set.
 - Worker uses `bull` + Redis. Ensure `REDIS_URL` is reachable.
 - For production, configure a real S3 bucket and secure credentials.
+
+Proposals API (list/detail) - local dev
+
+1. Configure Mongo (env `MONGO_URI` for server, `MONGO_URI_TEST` for tests) or run local Mongo via docker-compose.
+
+2. Seed example proposals:
+
+```bash
+npm run seed
+```
+
+3. Start server (dev):
+
+```bash
+npm install
+npm run dev
+```
+
+4. Run tests (requires test Mongo at `MONGO_URI_TEST` or default `mongodb://localhost:27017/backendm3d_test`):
+
+```bash
+npm test
+```
+
+5. OpenAPI spec: see `openapi.yaml` at project root.
