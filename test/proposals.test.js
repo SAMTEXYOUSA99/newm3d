@@ -18,8 +18,9 @@ beforeAll(async () => {
       clientName: `Client ${i}`,
       projectName: `Project ${i}`,
       project_services: [{ id: 's1', label: 'Service', price: 1000 + i * 100 }],
+      productionDays: 5,
       currentDate: new Date().toISOString(),
-      projectDeadline: '10 dias',
+      projectDeadline: '2026-09-15',
       status: i % 2 === 0 ? 'Em elaboração' : 'Enviado',
       code: `ORC-TEST-${i}`
     });
@@ -38,6 +39,8 @@ test('GET /proposals returns paginated list', async () => {
   expect(Array.isArray(res.body.items)).toBe(true);
   expect(res.body).toHaveProperty('total');
   expect(res.body.total).toBeGreaterThanOrEqual(15);
+  expect(res.body.items[0]).toHaveProperty('projectDeadline');
+  expect(res.body.items[0]).toHaveProperty('productionDays');
 });
 
 test('GET /proposals/:id returns detail or 404', async () => {
@@ -53,5 +56,7 @@ test('GET /proposals/:id returns detail or 404', async () => {
     expect(res.body).toHaveProperty('id');
     expect(res.body).toHaveProperty('client');
     expect(res.body).toHaveProperty('total');
+    expect(res.body).toHaveProperty('projectDeadline', '2026-09-15');
+    expect(res.body).toHaveProperty('productionDays', 5);
   }
 });

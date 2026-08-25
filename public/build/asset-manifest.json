@@ -1,7 +1,7 @@
 {
   "files": {
-    "main.css": "./static/css/main.5d8f7ee4.css",
-    "main.js": "./static/js/main.5e8356c4.js",
+    "main.css": "./static/css/main.86c47559.css",
+    "main.js": "./static/js/main.fe043c6c.js",
     "static/media/friburgo.mp4": "./static/media/friburgo.b1f081e61c50b055e45c.mp4",
     "static/media/geminadoshome.mp4": "./static/media/geminadoshome.13b451d26f41e97a6b36.mp4",
     "static/media/12geminadosasconstrucoes.png": "./static/media/12geminadosasconstrucoes.ffd792b068d3880c98a8.png",
@@ -72,11 +72,11 @@
     "static/media/slick.ttf": "./static/media/slick.c94f7671dcc99dce43e2.ttf",
     "static/media/slick.woff": "./static/media/slick.295183786cd8a1389865.woff",
     "static/media/trofeu.svg": "./static/media/trofeu.6b26c7d97c0f76d7059a50d624313d33.svg",
-    "main.5d8f7ee4.css.map": "./static/css/main.5d8f7ee4.css.map",
-    "main.5e8356c4.js.map": "./static/js/main.5e8356c4.js.map"
+    "main.86c47559.css.map": "./static/css/main.86c47559.css.map",
+    "main.fe043c6c.js.map": "./static/js/main.fe043c6c.js.map"
   },
   "entrypoints": [
-    "static/css/main.5d8f7ee4.css",
-    "static/js/main.5e8356c4.js"
+    "static/css/main.86c47559.css",
+    "static/js/main.fe043c6c.js"
   ]
 }

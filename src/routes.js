@@ -8,6 +8,7 @@ const ProjectsController = require('./controllers/ProjectsController');
 const ProductItemsController = require('./controllers/ProductItemsController');
 const ActivitiesController = require('./controllers/ActivitiesController');
 const ContractsController = require('./controllers/ContractsController');
+const ContractController = require('./controllers/ContractController');
 
 //const DashboardController = require('../src/controllers/DashboardController');
 
@@ -48,9 +49,15 @@ routes.delete('/api/projects/:id/items/:itemId', ProductItemsController.removeIt
 routes.get('/api/projects/:id/activities', ActivitiesController.list);
 routes.post('/api/projects/:id/activities', ActivitiesController.create);
 
-// Contracts
+// Contract PDF jobs (async generation for Project model)
 routes.post('/api/projects/:id/contract', ContractsController.createContract);
 routes.get('/api/contracts/:jobId/status', ContractsController.getStatus);
+
+// Contracts (created from a Proposal + contractant/payment data)
+routes.post('/contracts', ContractController.store);
+routes.get('/contracts', ContractController.index);
+routes.get('/contracts/:id', ContractController.show);
+routes.get('/contracts/:id/pdf', ContractController.pdf);
 
 
 //routes.get('/dashboard', DashboardController.show);

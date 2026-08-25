@@ -15,9 +15,10 @@ module.exports = {
         projectName,
         clientSource,
         project_services,
-        productionDays
+        productionDays,
+        projectDeadline
       } = req.body;
-
+      console.log('projectdeadline', projectDeadline);
       const user_id = req.headers.user_id || req.headers['user_id'];
 
       // Normalize services
@@ -41,7 +42,6 @@ module.exports = {
       }
 
       const currentDate = new Date().toLocaleDateString('pt-BR');
-      const projectDeadline = productionDays ? `${productionDays} dias` : '';
 
       // Map to fields expected by existing PDF services
       // Support new frontend payload keys like `project_model_description` and `project_model_title`.
@@ -164,6 +164,8 @@ module.exports = {
           title: d.projectName || '',
           client: d.clientName || '',
           value: typeof d.project_price === 'number' ? d.project_price : Number(d.project_price || 0),
+          projectDeadline: d.projectDeadline || '',
+          productionDays: d.productionDays || 0,
           status: d.status || 'Em elaboração',
           updated: d.currentDate || d.createdAt,
           team: d.user ? [{ name: d.user.name }] : []
@@ -179,6 +181,7 @@ module.exports = {
 
   async show(req, res) {
     try {
+
       const id = req.params.id;
       let proposal = null;
 
@@ -198,6 +201,8 @@ module.exports = {
         return res.status(404).json({ message: 'Not found' });
       }
 
+      console.log('ProposalController.show projectDeadline:', proposal.projectDeadline);
+
       const idOut = proposal.code || `ORC-${String(proposal._id).slice(-6).toUpperCase()}`;
       const subtotal = Array.isArray(proposal.project_services)
         ? proposal.project_services.reduce((s, it) => s + (Number(it.price) || 0), 0)
@@ -210,11 +215,15 @@ module.exports = {
 
       const response = {
         id: idOut,
+        project_model: proposal.project_model || '',
+        projectDeadline: proposal.projectDeadline || '',
+        productionDays: proposal.productionDays || 0,
         title: proposal.projectName || '',
         client: proposal.clientName || '',
         createdAt: proposal.createdAt,
         status: proposal.status || 'Em elaboração',
         responsible: proposal.user ? { name: proposal.user.name, avatar: proposal.user.avatar || null } : null,
+        project_price: Number(proposal.project_price || 0),
         subtotal,
         discount,
         taxes,
